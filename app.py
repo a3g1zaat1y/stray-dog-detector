@@ -30,8 +30,8 @@ if uploaded_file:
         detections, results = detect_dogs_from_frame(frame)
         dog_count += len(detections)
 
-        # Render bounding boxes
-        annotated_frame = np.squeeze(results.render())
+        # 'annotated_frame' already returned from dog_detector
+        detections, annotated_frame = detect_dogs_from_frame(frame)
         stframe.image(annotated_frame, channels="BGR")
 
         frame_count += 1
