@@ -5,6 +5,9 @@ import numpy as np
 from dog_detector import detect_dogs_from_frame
 import matplotlib.pyplot as plt
 import os
+import warnings
+
+
 
 st.set_page_config(page_title="Stray Dog Detector", layout="wide")
 st.title("🐶 Stray Dog Detection System")
@@ -46,7 +49,7 @@ if uploaded_file:
         total_dog_count += dog_count
 
         # Display the frame
-        stframe.image(annotated_frame, channels="BGR", use_column_width=True)
+        stframe.image(annotated_frame, channels="BGR", use_container_width=True)
 
         # Add data for graph
         detection_counts.append(dog_count)
@@ -67,3 +70,5 @@ if uploaded_file:
     cap.release()
     st.success(f"✅ Detection Complete!\n\nTotal Frames: {frame_count}, Total Dogs Detected: {total_dog_count}")
     st.download_button("📥 Download Alert Log (CSV)", data=open("alert_log.csv").read(), file_name="alert_log.csv")
+
+warnings.filterwarnings("ignore", category=DeprecationWarning)
