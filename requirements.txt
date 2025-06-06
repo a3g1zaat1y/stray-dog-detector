@@ -1,7 +1,7 @@
-ultralytics
-opencv-python-headless
 streamlit
+ultralytics
 torch
+opencv-python-headless
 pandas
 numpy
 Pillow

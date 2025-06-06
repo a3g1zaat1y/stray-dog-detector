@@ -1,21 +1,24 @@
 # dog_detector.py
-import torch
-import cv2
-import pandas as pd
+from ultralytics import YOLO
 
-model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
-model.eval()
+model = YOLO('yolov5s.pt')  # Automatically downloads YOLOv5s weights
 
 def detect_dogs_from_frame(frame):
-    results = model(frame)
+    results = model.predict(source=frame, save=False, verbose=False)
     detections = []
-    
-    for *box, conf, cls in results.xyxy[0]:
-        label = results.names[int(cls)]
-        if label.lower() == 'dog':
-            detections.append({
-                'box': box,
-                'confidence': float(conf),
-                'label': label
-            })
-    return detections, results
+
+    for result in results:
+        boxes = result.boxes
+        names = model.names
+        for box in boxes:
+            label = names[int(box.cls)]
+            if label.lower() == 'dog':
+                detections.append({
+                    'box': box.xyxy.tolist(),
+                    'confidence': float(box.conf),
+                    'label': label
+                })
+
+    # Render bounding boxes
+    annotated_frame = results[0].plot()
+    return detections, annotated_frame
