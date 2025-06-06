@@ -1,7 +1,7 @@
 # dog_detector.py
 from ultralytics import YOLO
 
-model = YOLO('yolov5s.pt')  # Automatically downloads YOLOv5s weights
+model = YOLO('yolov8n.pt')  # Automatically downloads YOLOv5s weights
 
 def detect_dogs_from_frame(frame):
     results = model.predict(source=frame, save=False, verbose=False)
