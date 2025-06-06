@@ -7,7 +7,8 @@ import matplotlib.pyplot as plt
 import os
 import warnings
 
-
+# Suppress deprecated warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 st.set_page_config(page_title="Stray Dog Detector", layout="wide")
 st.title("🐶 Stray Dog Detection System")
@@ -18,7 +19,11 @@ uploaded_file = st.file_uploader("Upload a video", type=["mp4", "avi", "mov"])
 if os.path.exists("alert_log.csv"):
     os.remove("alert_log.csv")
 with open("alert_log.csv", "w") as log:
-    log.write("Frame,DogCount\n")
+    log.write("Frame,DogCount,Timestamp\n")
+
+# Prepare output folder for alert screenshots
+if not os.path.exists("alerts"):
+    os.makedirs("alerts")
 
 # Initialize graph data
 detection_counts = []
@@ -34,6 +39,7 @@ if uploaded_file:
     cap = cv2.VideoCapture("temp_video.mp4")
     frame_count = 0
     total_dog_count = 0
+    fps = cap.get(cv2.CAP_PROP_FPS) or 30  # fallback FPS if not found
 
     stframe = st.empty()
     chart_placeholder = st.empty()
@@ -48,6 +54,10 @@ if uploaded_file:
         dog_count = len(detections)
         total_dog_count += dog_count
 
+        # Timestamp (MM:SS)
+        timestamp_sec = frame_count / fps
+        timestamp_str = f"{int(timestamp_sec//60):02}:{int(timestamp_sec%60):02}"
+
         # Display the frame
         stframe.image(annotated_frame, channels="BGR", use_container_width=True)
 
@@ -61,14 +71,13 @@ if uploaded_file:
 
         # Trigger alert if ≥ 3 dogs
         if dog_count >= 3:
-            alert_placeholder.warning(f"🚨 High stray dog activity detected in Frame {frame_count}!")
+            alert_placeholder.warning(f"🚨 High stray dog activity detected! Frame {frame_count} | Time {timestamp_str}")
             with open("alert_log.csv", "a") as log:
-                log.write(f"{frame_count},{dog_count}\n")
+                log.write(f"{frame_count},{dog_count},{timestamp_str}\n")
+            cv2.imwrite(f"alerts/alert_frame_{frame_count}.jpg", annotated_frame)
 
         frame_count += 1
 
     cap.release()
     st.success(f"✅ Detection Complete!\n\nTotal Frames: {frame_count}, Total Dogs Detected: {total_dog_count}")
     st.download_button("📥 Download Alert Log (CSV)", data=open("alert_log.csv").read(), file_name="alert_log.csv")
-
-warnings.filterwarnings("ignore", category=DeprecationWarning)
