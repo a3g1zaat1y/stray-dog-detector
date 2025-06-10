@@ -115,8 +115,7 @@ if uploaded_file:
         if frame_count % 10 == 0:
             chart_placeholder.line_chart(data={"Dogs Detected": detection_counts})
 
-        # 🚨 Trigger alert
-        if dog_count >= 3:
+             if dog_count >= 3:
             alert_placeholder.warning(f"🚨 High stray dog activity! Frame {frame_count} | Time {timestamp_str}")
             
             with open("alert_log.csv", "a") as log:
@@ -125,7 +124,10 @@ if uploaded_file:
             frame_path = f"alerts/alert_frame_{frame_count}.jpg"
             cv2.imwrite(frame_path, annotated_frame)
 
-            # Send email
+            # 🔍 DEBUG LOGS
+            print("📤 Attempting to send email alert now...")
+
+            # 📤 Send email with attached frame + log
             send_email_alert(
                 frame_path=frame_path,
                 log_path="alert_log.csv",
@@ -134,7 +136,10 @@ if uploaded_file:
                 frame_number=frame_count
             )
 
+            print("✅ Email function executed for frame:", frame_count)
+
         frame_count += 1
+
 
     cap.release()
     st.success(f"✅ Detection Complete!\n\nTotal Frames: {frame_count}, Total Dogs Detected: {total_dog_count}")
