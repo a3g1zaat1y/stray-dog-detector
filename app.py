@@ -4,6 +4,7 @@ from PIL import Image
 import numpy as np
 from dog_detector import detect_dogs_from_frame
 import matplotlib.pyplot as plt
+import pandas as pd
 import os
 import warnings
 import smtplib
@@ -114,11 +115,9 @@ if uploaded_file:
         detection_counts.append(dog_count)
         frame_numbers.append(frame_count)
 
-        # 🟢 Live chart (optional)
         if enable_live_chart and frame_count % 10 == 0:
             chart_placeholder.line_chart(data={"Dogs Detected": detection_counts})
 
-        # 🚨 Alert logic
         if dog_count >= 3:
             alert_timestamps.append(timestamp_str)
             frame_path = f"alerts/alert_frame_{frame_count}.jpg"
@@ -136,7 +135,7 @@ if uploaded_file:
 
     st.success(f"✅ Detection Complete!\n\nTotal Frames: {frame_count}, Total Dogs Detected: {total_dog_count}")
 
-    # 📤 Summary email
+    # 📤 Send Summary Email
     send_summary_email(
         alert_timestamps=alert_timestamps,
         frame_path=first_alert_screenshot,
@@ -145,10 +144,13 @@ if uploaded_file:
         duration=video_duration
     )
 
-    # 📊 Summary Chart
+    # 📊 Summary Chart (Fixed)
     st.subheader("📊 Dogs Detected per 10-Second Interval")
     interval_labels = [f"{i*10}-{(i+1)*10}s" for i in sorted(interval_counts)]
     dog_totals = [interval_counts[i] for i in sorted(interval_counts)]
-    st.bar_chart(data={"Dogs": dog_totals}, x=interval_labels)
+
+    df_chart = pd.DataFrame({"Interval": interval_labels, "Dogs": dog_totals})
+    df_chart.set_index("Interval", inplace=True)
+    st.bar_chart(df_chart)
 
     st.download_button("📥 Download Alert Log (CSV)", data=open("alert_log.csv").read(), file_name="alert_log.csv")
