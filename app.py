@@ -16,8 +16,8 @@ from email.utils import formataddr
 def send_email_alert(frame_path, log_path, location, timestamp, frame_number):
     sender_email = "izzatiasmui99@gmail.com"         # 🔁 REPLACE THIS
     sender_name = "Stray Dog Alert System"
-    receiver_email = "212119@student.upm.edu.my"          # 🔁 REPLACE THIS
-    app_password = "mimm uppy motk rixi"             # 🔁 REPLACE THIS (Use App Password)
+    receiver_email = "212119@student.upm.edu.my"      # 🔁 REPLACE THIS
+    app_password = "mimmuppymotkrixi"                 # 🔁 Use Gmail App Password (no spaces)
 
     msg = EmailMessage()
     msg['Subject'] = f"🚨 Stray Dog Alert – Frame {frame_number} at {location}"
@@ -115,7 +115,8 @@ if uploaded_file:
         if frame_count % 10 == 0:
             chart_placeholder.line_chart(data={"Dogs Detected": detection_counts})
 
-             if dog_count >= 3:
+        # 🚨 Alert block
+        if dog_count >= 3:
             alert_placeholder.warning(f"🚨 High stray dog activity! Frame {frame_count} | Time {timestamp_str}")
             
             with open("alert_log.csv", "a") as log:
@@ -139,7 +140,6 @@ if uploaded_file:
             print("✅ Email function executed for frame:", frame_count)
 
         frame_count += 1
-
 
     cap.release()
     st.success(f"✅ Detection Complete!\n\nTotal Frames: {frame_count}, Total Dogs Detected: {total_dog_count}")
