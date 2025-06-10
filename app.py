@@ -139,4 +139,4 @@ if uploaded_file:
     )
 
     # 📊 Summary Chart
-    st.subheader("📊 Dogs Detected per
+st.subheader("📊 Dogs Detected per 10-Second Interval")
