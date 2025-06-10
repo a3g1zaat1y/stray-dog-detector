@@ -17,7 +17,7 @@ def send_email_alert(frame_path, log_path, location, timestamp, frame_number):
     sender_email = "izzatiasmui99@gmail.com"         # 🔁 REPLACE THIS
     sender_name = "Stray Dog Alert System"
     receiver_email = "212119@student.upm.edu.my"          # 🔁 REPLACE THIS
-    app_password = "kInder703802"             # 🔁 REPLACE THIS (Use App Password)
+    app_password = "mimm uppy motk rixi"             # 🔁 REPLACE THIS (Use App Password)
 
     msg = EmailMessage()
     msg['Subject'] = f"🚨 Stray Dog Alert – Frame {frame_number} at {location}"
