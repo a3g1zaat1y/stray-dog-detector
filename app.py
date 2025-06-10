@@ -12,7 +12,7 @@ from email.utils import formataddr
 from collections import defaultdict
 
 # ----------------------------
-# 📤 Email Sending Function (Summary)
+# 📤 Email Sending Function
 # ----------------------------
 def send_summary_email(alert_timestamps, frame_path, log_path, location, duration):
     sender_email = "izzatiasmui99@gmail.com"
@@ -62,6 +62,7 @@ st.set_page_config(page_title="Stray Dog Detector", layout="wide")
 st.title("🐶 Stray Dog Detection System")
 
 location = st.text_input("📍 Enter video location", placeholder="e.g., Taman Seri Mewah, Kajang")
+enable_live_chart = st.checkbox("📈 Show real-time detection chart", value=False)
 uploaded_file = st.file_uploader("Upload a video", type=["mp4", "avi", "mov"])
 
 if os.path.exists("alert_log.csv"):
@@ -92,6 +93,7 @@ if uploaded_file:
     video_duration = f"{int((total_frames/fps)//60):02}:{int((total_frames/fps)%60):02}"
 
     stframe = st.empty()
+    chart_placeholder = st.empty()
 
     while True:
         ret, frame = cap.read()
@@ -112,6 +114,11 @@ if uploaded_file:
         detection_counts.append(dog_count)
         frame_numbers.append(frame_count)
 
+        # 🟢 Live chart (optional)
+        if enable_live_chart and frame_count % 10 == 0:
+            chart_placeholder.line_chart(data={"Dogs Detected": detection_counts})
+
+        # 🚨 Alert logic
         if dog_count >= 3:
             alert_timestamps.append(timestamp_str)
             frame_path = f"alerts/alert_frame_{frame_count}.jpg"
@@ -129,7 +136,7 @@ if uploaded_file:
 
     st.success(f"✅ Detection Complete!\n\nTotal Frames: {frame_count}, Total Dogs Detected: {total_dog_count}")
 
-    # 📤 Send summary email after video
+    # 📤 Summary email
     send_summary_email(
         alert_timestamps=alert_timestamps,
         frame_path=first_alert_screenshot,
@@ -139,4 +146,9 @@ if uploaded_file:
     )
 
     # 📊 Summary Chart
-st.subheader("📊 Dogs Detected per 10-Second Interval")
+    st.subheader("📊 Dogs Detected per 10-Second Interval")
+    interval_labels = [f"{i*10}-{(i+1)*10}s" for i in sorted(interval_counts)]
+    dog_totals = [interval_counts[i] for i in sorted(interval_counts)]
+    st.bar_chart(data={"Dogs": dog_totals}, x=interval_labels)
+
+    st.download_button("📥 Download Alert Log (CSV)", data=open("alert_log.csv").read(), file_name="alert_log.csv")
