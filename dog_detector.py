@@ -2,7 +2,7 @@ from ultralytics import YOLO
 import cv2
 
 # Load the uploaded YOLOv8n model
-model = YOLO('model\yolov8n.pt')  # Use the uploaded model path
+model = YOLO('model/yolov8n.pt')  # Use the uploaded model path
 
 def detect_dogs_from_frame(frame):
     results = model.predict(source=frame, save=False, verbose=False)
