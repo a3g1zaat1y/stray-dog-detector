@@ -1,7 +1,8 @@
-# dog_detector.py
 from ultralytics import YOLO
+import cv2
 
-model = YOLO('yolov8n.pt')  # Automatically downloads YOLOv5s weights
+# Load the uploaded YOLOv8n model
+model = YOLO('model\yolov8n.pt')  # Use the uploaded model path
 
 def detect_dogs_from_frame(frame):
     results = model.predict(source=frame, save=False, verbose=False)
@@ -19,6 +20,6 @@ def detect_dogs_from_frame(frame):
                     'label': label
                 })
 
-    # Render bounding boxes
+    # Render annotated frame with bounding boxes
     annotated_frame = results[0].plot()
     return detections, annotated_frame
